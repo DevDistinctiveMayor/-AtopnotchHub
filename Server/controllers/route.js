@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const meeting = require('./meeting/meeting');
 const contactRoute = require('./contact/_routes')
 const propertyRoute = require('./property/_routes');
 const leadRoute = require('./lead/_routes');
@@ -43,6 +44,13 @@ router.use('/email', emailRoute);
 router.use('/phoneCall', phoneCallRoute);
 router.use('/text-msg', TextMsgRoute);
 router.use('/meeting', meetingRoute);
+
+
+router.post('/', meeting.add);
+router.get('/', meeting.index);
+router.get('/:id', meeting.view);
+router.delete('/:id', meeting.deleteData);
+router.post('/bulk-delete', meeting.deleteMany);
 
 router.use("/images", imagesRoute);
 router.use('/role-access', roleAccessRoute);

@@ -2,27 +2,31 @@ import axios from "axios"
 import { constant } from "../constant"
 
 
+
 export const postApi = async (path, data, login) => {
     try {
+        console.log("POST TO:", constant.baseUrl + path); // debug
+        console.log("BASE URL:", constant.baseUrl);  // Should log http://localhost:5001
+
         let result = await axios.post(constant.baseUrl + path, data, {
             headers: {
                 Authorization: localStorage.getItem("token") || sessionStorage.getItem("token")
             }
-        })
-        if (result.data?.token && result.data?.token !== null) {
-            if (login) {
-                localStorage.setItem('token', result.data?.token)
-            } else {
-                sessionStorage.setItem('token', result.data?.token)
-            }
-            localStorage.setItem('user', JSON.stringify(result.data?.user))
+        });
+
+        if (result.data?.token) {
+            const storage = login ? localStorage : sessionStorage;
+            storage.setItem('token', result.data?.token);
+            localStorage.setItem('user', JSON.stringify(result.data?.user));
         }
-        return result
+
+        return result;
     } catch (e) {
-        console.error(e)
-        return e
+        console.error("API POST Error:", e);
+        return e;
     }
-}
+};
+
 export const putApi = async (path, data, id) => {
     try {
         let result = await axios.put(constant.baseUrl + path, data, {

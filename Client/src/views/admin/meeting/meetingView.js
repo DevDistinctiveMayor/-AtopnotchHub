@@ -58,7 +58,7 @@ const MeetingView = (props) => {
                         <ModalBody overflowY={"auto"}>
                             <Grid templateColumns="repeat(12, 1fr)" gap={3} >
                                 <GridItem colSpan={{ base: 12, md: 6 }} >
-                                    <Text fontSize="sm" fontWeight="bold" color={'blackAlpha.900'}> Agenda </Text>
+                                    <Text fontSize="sm" fontWeight="bold" color={'blackAlpha.900'}> jjAgenda </Text>
                                     <Text>{data?.agenda ? data?.agenda : ' - '}</Text>
                                 </GridItem>
                                 <GridItem colSpan={{ base: 12, md: 6 }} >

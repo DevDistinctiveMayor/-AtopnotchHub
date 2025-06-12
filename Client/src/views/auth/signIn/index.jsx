@@ -73,25 +73,28 @@ function SignIn() {
     },
   });
   const navigate = useNavigate();
+  console.log(postApi); // Should log the function definition
 
-  const login = async () => {
+
+const login = async () => {
     try {
-      setIsLoding(true);
-      let response = await postApi("api/user/login", values, checkBox);
-      if (response && response.status === 200) {
-        navigate("/superAdmin");
-        toast.success("Login Successfully!");
-        resetForm();
-        dispatch(setUser(response?.data?.user))
-      } else {
-        toast.error(response.response.data?.error);
-      }
+        setIsLoding(true);
+        let response = await postApi("/api/user/login", values, checkBox); // ✅ Fixed here
+        if (response && response.status === 200) {
+            navigate("/superAdmin");
+            toast.success("Login Successfully!");
+            resetForm();
+            dispatch(setUser(response?.data?.user));
+        } else {
+            toast.error(response.response.data?.error);
+        }
     } catch (e) {
-      console.log(e);
+        console.log(e);
     } finally {
-      setIsLoding(false);
+        setIsLoding(false);
     }
-  };
+};
+
 
   return (
     <DefaultAuth

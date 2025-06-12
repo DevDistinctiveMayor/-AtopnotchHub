@@ -21,12 +21,8 @@ const AddMeeting = (props) => {
     const [leadModelOpen, setLeadModel] = useState(false);
     const todayTime = new Date().toISOString().split('.')[0];
     const leadData = useSelector((state) => state?.leadData?.data);
-
-
     const user = JSON.parse(localStorage.getItem('user'))
-
     const contactList = useSelector((state) => state?.contactData?.data)
-
 
     const initialValues = {
         agenda: '',
@@ -42,23 +38,69 @@ const AddMeeting = (props) => {
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: MeetingSchema,
-        onSubmit: (values, { resetForm }) => {
-            
+        onSubmit: (values) => {
+            AddData(values);
         },
     });
     const { errors, touched, values, handleBlur, handleChange, handleSubmit, setFieldValue } = formik
 
-    const AddData = async () => {
+    const AddData = async (values) => {
+        setIsLoding(true);
 
+        const payload = {
+            agenda: values.agenda,
+            location: values.location,
+            related: values.related,
+            attendes: values.related === "Contact" ? values.attendes : values.attendesLead,
+            dateTime: values.dateTime,
+            notes: values.notes,
+            createBy: values.createBy,
+        };
+
+        try {
+            const response = await postApi('/api/meetings', values);
+
+            if (response.status === 201 || response.status === 200) {
+                toast.success('Meeting created successfully');
+                fetchData && fetchData();
+                onClose();
+            } else {
+                toast.error(response.data?.message || 'Failed to create meeting');
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || 'Error creating meeting');
+        } finally {
+            setIsLoding(false);
+        }
     };
 
     const fetchAllData = async () => {
-        
+        try {
+            if (values.related === "Contact") {
+                const response = await getApi('/contact');
+                setContactData(response.data || []);
+            } else if (values.related === "Lead") {
+                const response = await getApi('/lead');
+                setLeadData(response.data || []);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            toast.error("Failed to fetch data");
+        }
     }
 
     useEffect(() => {
+        if (values.related && values.related !== "None") {
+            fetchAllData();
+        }
+    }, [values.related])
 
-    }, [props.id, values.related])
+    useEffect(() => {
+        if (props.id && props.leadContect) {
+            setFieldValue('related', props.leadContect === 'contactView' ? 'Contact' : 'Lead');
+        }
+    }, [props.id, props.leadContect])
 
     const extractLabels = (selectedItems) => {
         return selectedItems.map((item) => item._id);
@@ -203,4 +245,3 @@ const AddMeeting = (props) => {
 }
 
 export default AddMeeting
-
